@@ -17,9 +17,10 @@ class PasscodeController extends Controller
 
     public function verify(VerifyPasscodeRequest $request): RedirectResponse
     {
-        $expected = config('recipes.passcode');
+        $expected = trim((string) config('recipes.passcode'));
+        $provided = $request->string('passcode')->trim()->value();
 
-        if (! is_string($expected) || $expected === '' || ! hash_equals($expected, $request->string('passcode')->value())) {
+        if ($expected === '' || ! hash_equals($expected, $provided)) {
             throw ValidationException::withMessages([
                 'passcode' => 'That passcode is incorrect.',
             ]);
