@@ -232,7 +232,7 @@ onBeforeUnmount(() => {
                             <span>{{ ingredient.name }}</span>
                             <span class="shrink-0 font-medium tabular-nums text-right">
                                 <template v-if="ingredient.display">
-                                    {{ ingredient.display }}<template v-if="ingredient.unit"> {{ ingredient.unit }}</template>
+                                    {{ ingredient.display }}<template v-if="ingredient.unit">&nbsp;{{ ingredient.unit }}</template>
                                 </template>
                                 <span v-else class="text-[#706f6c] dark:text-[#A1A09A]">to taste</span>
                             </span>
@@ -323,7 +323,7 @@ onBeforeUnmount(() => {
                                 <span>{{ ingredient.name }}</span>
                                 <span class="shrink-0 font-semibold tabular-nums">
                                     <template v-if="ingredient.display">
-                                        {{ ingredient.display }}<template v-if="ingredient.unit"> {{ ingredient.unit }}</template>
+                                        {{ ingredient.display }}<template v-if="ingredient.unit">&nbsp;{{ ingredient.unit }}</template>
                                     </template>
                                     <span v-else class="text-[#706f6c] dark:text-[#A1A09A]">to taste</span>
                                 </span>
