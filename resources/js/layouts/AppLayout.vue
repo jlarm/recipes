@@ -6,6 +6,7 @@ import { index as shoppingListIndex } from '@/routes/shopping-list';
 
 const page = usePage();
 const flash = computed(() => (page.props.flash as { success?: string } | undefined)?.success);
+const passcodeVerified = computed(() => page.props.passcodeVerified === true);
 </script>
 
 <template>
@@ -26,6 +27,7 @@ const flash = computed(() => (page.props.flash as { success?: string } | undefin
                         🛒 <span class="hidden sm:inline">Shopping list</span>
                     </Link>
                     <Link
+                        v-if="passcodeVerified"
                         :href="recipesCreate().url"
                         class="rounded-full bg-[#1b1b18] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#333] dark:bg-white dark:text-[#1b1b18] dark:hover:bg-[#e5e5e5]"
                     >

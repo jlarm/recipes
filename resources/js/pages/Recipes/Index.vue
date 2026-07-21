@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head, InfiniteScroll, Link, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { Head, InfiniteScroll, Link, router, usePage } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { create as recipesCreate, index as recipesIndex, show as recipesShow } from '@/routes/recipes';
 import type { Category, Paginated, RecipeFilters, RecipeSort, RecipeSummary } from '@/types/recipes';
@@ -10,6 +10,9 @@ const props = defineProps<{
     categories: Category[];
     filters: RecipeFilters;
 }>();
+
+const page = usePage();
+const passcodeVerified = computed(() => page.props.passcodeVerified === true);
 
 const SORT_OPTIONS: { value: RecipeSort; label: string }[] = [
     { value: 'newest', label: 'Newest' },
@@ -172,6 +175,7 @@ function totalTime(recipe: RecipeSummary): number | null {
             <template v-else>
                 <p class="text-[#706f6c] dark:text-[#A1A09A]">No recipes yet.</p>
                 <Link
+                    v-if="passcodeVerified"
                     :href="recipesCreate().url"
                     class="mt-4 inline-block rounded-full bg-[#1b1b18] px-5 py-2 text-sm font-medium text-white dark:bg-white dark:text-[#1b1b18]"
                 >

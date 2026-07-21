@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref, watch } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatQuantity, scaleQuantity } from '@/lib/quantity';
@@ -9,6 +9,9 @@ import type { ShoppingRecipe } from '@/types/recipes';
 const props = defineProps<{
     recipes: ShoppingRecipe[];
 }>();
+
+const page = usePage();
+const passcodeVerified = computed(() => page.props.passcodeVerified === true);
 
 const SELECTION_KEY = 'shopping-selection';
 const CHECKED_KEY = 'shopping-checked';
@@ -181,6 +184,7 @@ watch(checked, (value) => {
         <div v-if="recipes.length === 0" class="rounded-xl border border-dashed border-black/10 p-12 text-center dark:border-white/15">
             <p class="text-[#706f6c] dark:text-[#A1A09A]">No recipes to add yet.</p>
             <Link
+                v-if="passcodeVerified"
                 :href="recipesCreate().url"
                 class="mt-4 inline-block rounded-full bg-[#1b1b18] px-5 py-2 text-sm font-medium text-white dark:bg-white dark:text-[#1b1b18]"
             >

@@ -44,6 +44,7 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => $request->session()->get('success'),
             ],
+            'passcodeVerified' => $request->session()->get('passcode_verified') === true,
         ];
     }
 }
