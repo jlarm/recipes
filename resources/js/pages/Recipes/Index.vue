@@ -110,15 +110,28 @@ function totalTime(recipe: RecipeSummary): number | null {
             </div>
             <label class="flex shrink-0 items-center gap-2 text-sm text-[#706f6c] dark:text-[#A1A09A]">
                 <span class="hidden sm:inline">Sort</span>
-                <select
-                    :value="filters.sort"
-                    class="rounded-full border border-black/10 bg-white py-2.5 pr-8 pl-4 text-sm text-[#1b1b18] outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/15 dark:bg-[#161615] dark:text-[#EDEDEC]"
-                    @change="onSortChange"
-                >
-                    <option v-for="option in SORT_OPTIONS" :key="option.value" :value="option.value">
-                        {{ option.label }}
-                    </option>
-                </select>
+                <div class="relative">
+                    <select
+                        :value="filters.sort"
+                        class="appearance-none rounded-full border border-black/10 bg-white py-2.5 pr-10 pl-5 text-sm text-[#1b1b18] outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/15 dark:bg-[#161615] dark:text-[#EDEDEC]"
+                        @change="onSortChange"
+                    >
+                        <option v-for="option in SORT_OPTIONS" :key="option.value" :value="option.value">
+                            {{ option.label }}
+                        </option>
+                    </select>
+                    <svg
+                        class="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-[#706f6c] dark:text-[#A1A09A]"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M6 8l4 4 4-4" />
+                    </svg>
+                </div>
             </label>
         </div>
 
