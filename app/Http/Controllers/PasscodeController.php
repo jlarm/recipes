@@ -28,8 +28,24 @@ class PasscodeController extends Controller
 
         $request->session()->put('passcode_verified', true);
 
-        $intended = $request->session()->pull('passcode_intended_url');
+        $intended = $request->session()->pull('passcode_intended_url') ?? $this->safeRedirect($request);
 
         return redirect()->to($intended ?? route('recipes.create'));
+    }
+
+    /**
+     * A same-site path the dialog asked us to return to, if it is safe to honour.
+     *
+     * Only relative paths are accepted so the field can't be used as an open redirect.
+     */
+    private function safeRedirect(VerifyPasscodeRequest $request): ?string
+    {
+        $redirect = $request->string('redirect')->trim()->value();
+
+        if ($redirect === '' || ! str_starts_with($redirect, '/') || str_starts_with($redirect, '//')) {
+            return null;
+        }
+
+        return $redirect;
     }
 }

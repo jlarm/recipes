@@ -35,6 +35,25 @@ it('returns the visitor to their intended destination after verifying', function
         ->assertRedirect(route('recipes.create'));
 });
 
+it('returns to a safe relative redirect supplied by the dialog', function () {
+    post(route('passcode.verify'), ['passcode' => 'secret-code', 'redirect' => '/recipes?category=dinner'])
+        ->assertRedirect('/recipes?category=dinner');
+});
+
+it('ignores an off-site redirect and falls back to the create form', function () {
+    post(route('passcode.verify'), ['passcode' => 'secret-code', 'redirect' => 'https://evil.test/phish'])
+        ->assertRedirect(route('recipes.create'));
+
+    post(route('passcode.verify'), ['passcode' => 'secret-code', 'redirect' => '//evil.test'])
+        ->assertRedirect(route('recipes.create'));
+});
+
+it('prefers the intended url over the dialog redirect', function () {
+    withSession(['passcode_intended_url' => route('recipes.create')])
+        ->post(route('passcode.verify'), ['passcode' => 'secret-code', 'redirect' => '/recipes'])
+        ->assertRedirect(route('recipes.create'));
+});
+
 it('rejects any passcode when none is configured', function () {
     config()->set('recipes.passcode', null);
 

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import PasscodeDialog from '@/components/PasscodeDialog.vue';
 import { index as recipesIndex, create as recipesCreate } from '@/routes/recipes';
 import { index as shoppingListIndex } from '@/routes/shopping-list';
 
 const page = usePage();
 const flash = computed(() => (page.props.flash as { success?: string } | undefined)?.success);
 const passcodeVerified = computed(() => page.props.passcodeVerified === true);
+
+const passcodeDialogOpen = ref(false);
 </script>
 
 <template>
@@ -26,8 +29,16 @@ const passcodeVerified = computed(() => page.props.passcodeVerified === true);
                     >
                         🛒 <span class="hidden sm:inline">Shopping list</span>
                     </Link>
+                    <button
+                        v-if="!passcodeVerified"
+                        type="button"
+                        class="rounded-full px-3 py-2 text-sm font-medium text-[#706f6c] transition hover:bg-black/5 hover:text-[#1b1b18] dark:text-[#A1A09A] dark:hover:bg-white/10 dark:hover:text-white"
+                        @click="passcodeDialogOpen = true"
+                    >
+                        🔒 <span class="hidden sm:inline">Log in</span>
+                    </button>
                     <Link
-                        v-if="passcodeVerified"
+                        v-else
                         :href="recipesCreate().url"
                         class="rounded-full bg-[#1b1b18] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#333] dark:bg-white dark:text-[#1b1b18] dark:hover:bg-[#e5e5e5]"
                     >
@@ -49,5 +60,7 @@ const passcodeVerified = computed(() => page.props.passcodeVerified === true);
         <main class="mx-auto max-w-4xl px-6 py-10">
             <slot />
         </main>
+
+        <PasscodeDialog v-model:open="passcodeDialogOpen" />
     </div>
 </template>
