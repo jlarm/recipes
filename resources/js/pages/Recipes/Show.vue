@@ -3,6 +3,7 @@ import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, ref } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import StarRating from '@/components/StarRating.vue';
+import { FALLBACK_IMAGE, useFallbackImage } from '@/lib/image';
 import { formatQuantity, scaleQuantity } from '@/lib/quantity';
 import { destroy as recipesDestroy, edit as recipesEdit, index as recipesIndex } from '@/routes/recipes';
 import type { Recipe } from '@/types/recipes';
@@ -117,9 +118,10 @@ onBeforeUnmount(() => {
         </Link>
 
         <img
-            :src="recipe.image_url ?? '/bg.webp'"
+            :src="recipe.image_url ?? FALLBACK_IMAGE"
             :alt="recipe.title"
             class="mt-4 aspect-[21/9] w-full rounded-2xl object-cover print:hidden"
+            @error="useFallbackImage"
         />
 
         <header class="mt-6">

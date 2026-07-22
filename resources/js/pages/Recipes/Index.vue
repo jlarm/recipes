@@ -3,6 +3,7 @@ import { Head, InfiniteScroll, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import StarRating from '@/components/StarRating.vue';
+import { FALLBACK_IMAGE, useFallbackImage } from '@/lib/image';
 import { create as recipesCreate, index as recipesIndex, show as recipesShow } from '@/routes/recipes';
 import type { Category, Paginated, RecipeFilters, RecipeSort, RecipeSummary } from '@/types/recipes';
 
@@ -232,10 +233,11 @@ function totalTime(recipe: RecipeSummary): number | null {
                     class="aspect-[16/9] w-full overflow-hidden bg-black/5 dark:bg-white/5"
                 >
                     <img
-                        :src="recipe.image_url ?? '/bg.webp'"
+                        :src="recipe.image_url ?? FALLBACK_IMAGE"
                         :alt="recipe.title"
                         class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
                         loading="lazy"
+                        @error="useFallbackImage"
                     />
                 </div>
                 <div class="flex flex-1 flex-col p-6">
