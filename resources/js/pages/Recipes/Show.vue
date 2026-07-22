@@ -117,8 +117,7 @@ onBeforeUnmount(() => {
         </Link>
 
         <img
-            v-if="recipe.image_url"
-            :src="recipe.image_url"
+            :src="recipe.image_url ?? '/bg.webp'"
             :alt="recipe.title"
             class="mt-4 aspect-[21/9] w-full rounded-2xl object-cover print:hidden"
         />

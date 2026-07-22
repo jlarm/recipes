@@ -229,11 +229,10 @@ function totalTime(recipe: RecipeSummary): number | null {
                 class="group flex flex-col overflow-hidden rounded-xl border border-black/5 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-[#161615]"
             >
                 <div
-                    v-if="recipe.image_url"
                     class="aspect-[16/9] w-full overflow-hidden bg-black/5 dark:bg-white/5"
                 >
                     <img
-                        :src="recipe.image_url"
+                        :src="recipe.image_url ?? '/bg.webp'"
                         :alt="recipe.title"
                         class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
                         loading="lazy"
