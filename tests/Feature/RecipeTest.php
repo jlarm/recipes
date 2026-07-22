@@ -57,6 +57,7 @@ it('stores a recipe with ordered ingredients when verified', function () {
         'servings' => 4,
         'prep_minutes' => 10,
         'cook_minutes' => 15,
+        'rating' => 5,
         'instructions' => "Mix.\nCook.",
         'ingredients' => [
             ['name' => 'flour', 'quantity' => 250, 'unit' => 'g'],
@@ -71,10 +72,37 @@ it('stores a recipe with ordered ingredients when verified', function () {
     expect($recipe->title)->toBe('Test Pancakes')
         ->and($recipe->slug)->toBe('test-pancakes')
         ->and($recipe->category->name)->toBe('Breakfast')
+        ->and($recipe->rating)->toBe(5)
         ->and($recipe->ingredients)->toHaveCount(2)
         ->and($recipe->ingredients[0]->name)->toBe('flour')
         ->and($recipe->ingredients[0]->position)->toBe(0)
         ->and($recipe->ingredients[1]->quantity)->toBeNull();
+});
+
+it('rejects a rating outside the 1 to 5 range', function () {
+    withSession(['passcode_verified' => true])
+        ->post(route('recipes.store'), [
+            'title' => 'Overrated',
+            'category' => 'Dinner',
+            'servings' => 2,
+            'rating' => 6,
+            'instructions' => 'Do it.',
+            'ingredients' => [['name' => 'water', 'quantity' => 1, 'unit' => 'cup']],
+        ])
+        ->assertSessionHasErrors(['rating']);
+});
+
+it('treats a blank rating as unrated', function () {
+    withSession(['passcode_verified' => true])->post(route('recipes.store'), [
+        'title' => 'No Rating',
+        'category' => 'Dinner',
+        'servings' => 2,
+        'rating' => '',
+        'instructions' => 'Do it.',
+        'ingredients' => [['name' => 'water', 'quantity' => 1, 'unit' => 'cup']],
+    ]);
+
+    expect(Recipe::first()->rating)->toBeNull();
 });
 
 it('validates required fields when storing', function () {
@@ -130,6 +158,7 @@ it('updates a recipe and replaces its ingredients', function () {
         'servings' => 6,
         'prep_minutes' => 5,
         'cook_minutes' => 20,
+        'rating' => 4,
         'instructions' => "Step one.\nStep two.",
         'ingredients' => [
             ['name' => 'sugar', 'quantity' => 100, 'unit' => 'g'],
@@ -144,6 +173,7 @@ it('updates a recipe and replaces its ingredients', function () {
     expect($recipe->title)->toBe('New Title')
         ->and($recipe->slug)->toBe($originalSlug) // slug stays stable for links
         ->and($recipe->servings)->toBe(6)
+        ->and($recipe->rating)->toBe(4)
         ->and($recipe->ingredients)->toHaveCount(2)
         ->and($recipe->ingredients[0]->name)->toBe('sugar');
 });

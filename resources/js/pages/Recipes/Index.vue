@@ -2,6 +2,7 @@
 import { Head, InfiniteScroll, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import StarRating from '@/components/StarRating.vue';
 import { create as recipesCreate, index as recipesIndex, show as recipesShow } from '@/routes/recipes';
 import type { Category, Paginated, RecipeFilters, RecipeSort, RecipeSummary } from '@/types/recipes';
 
@@ -19,6 +20,13 @@ const SORT_OPTIONS: { value: RecipeSort; label: string }[] = [
     { value: 'oldest', label: 'Oldest' },
     { value: 'title', label: 'A–Z' },
     { value: 'quickest', label: 'Quickest' },
+    { value: 'top-rated', label: 'Top rated' },
+];
+
+const RATING_OPTIONS: { value: number; label: string }[] = [
+    { value: 4, label: '4+' },
+    { value: 3, label: '3+' },
+    { value: 2, label: '2+' },
 ];
 
 const search = ref(props.filters.search);
@@ -29,6 +37,7 @@ function applyFilters(overrides: Partial<RecipeFilters> = {}): void {
     const next = {
         search: search.value,
         category: props.filters.category,
+        minRating: props.filters.minRating,
         sort: props.filters.sort,
         ...overrides,
     };
@@ -39,6 +48,10 @@ function applyFilters(overrides: Partial<RecipeFilters> = {}): void {
 
     if (next.category !== '') {
         params.category = next.category;
+    }
+
+    if (next.minRating > 0) {
+        params.min_rating = String(next.minRating);
     }
 
     if (next.sort !== 'newest') {
@@ -67,12 +80,18 @@ function selectCategory(slug: string): void {
     applyFilters({ category: slug });
 }
 
+function selectMinRating(rating: number): void {
+    // Clicking the active rating chip toggles it back off.
+    applyFilters({ minRating: props.filters.minRating === rating ? 0 : rating });
+}
+
 function clearSearch(): void {
     search.value = '';
     applyFilters({ search: '' });
 }
 
-const hasActiveFilters = () => props.filters.search !== '' || props.filters.category !== '';
+const hasActiveFilters = () =>
+    props.filters.search !== '' || props.filters.category !== '' || props.filters.minRating > 0;
 
 function totalTime(recipe: RecipeSummary): number | null {
     const total = (recipe.prep_minutes ?? 0) + (recipe.cook_minutes ?? 0);
@@ -164,6 +183,23 @@ function totalTime(recipe: RecipeSummary): number | null {
             </button>
         </div>
 
+        <!-- Rating filter -->
+        <div class="mt-3 flex flex-wrap items-center gap-2">
+            <span class="text-xs font-medium uppercase tracking-wide text-[#706f6c] dark:text-[#A1A09A]">Rating</span>
+            <button
+                v-for="option in RATING_OPTIONS"
+                :key="option.value"
+                type="button"
+                class="inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm font-medium transition"
+                :class="filters.minRating === option.value
+                    ? 'border-transparent bg-[#1b1b18] text-white dark:bg-white dark:text-[#1b1b18]'
+                    : 'border-black/10 hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10'"
+                @click="selectMinRating(option.value)"
+            >
+                <span class="text-amber-500">★</span>{{ option.label }}
+            </button>
+        </div>
+
         <!-- Results -->
         <div v-if="recipes.data.length === 0" class="mt-8 rounded-xl border border-dashed border-black/10 p-12 text-center dark:border-white/15">
             <template v-if="hasActiveFilters()">
@@ -215,6 +251,7 @@ function totalTime(recipe: RecipeSummary): number | null {
                         {{ recipe.category.name }}
                     </span>
                 </div>
+                <StarRating v-if="recipe.rating" :model-value="recipe.rating" size="sm" class="mt-2" />
                 <p v-if="recipe.description" class="mt-2 line-clamp-2 text-sm text-[#706f6c] dark:text-[#A1A09A]">
                     {{ recipe.description }}
                 </p>

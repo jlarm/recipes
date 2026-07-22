@@ -24,6 +24,7 @@ class UpdateRecipe
      *     servings: int,
      *     prep_minutes?: int|null,
      *     cook_minutes?: int|null,
+     *     rating?: int|null,
      *     instructions: string,
      *     ingredients: array<int, array{name: string, quantity?: float|null, unit?: string|null}>
      * }  $data
@@ -38,6 +39,7 @@ class UpdateRecipe
                 'servings' => $data['servings'],
                 'prep_minutes' => $data['prep_minutes'] ?? null,
                 'cook_minutes' => $data['cook_minutes'] ?? null,
+                'rating' => $data['rating'] ?? null,
                 'instructions' => $data['instructions'],
             ];
 

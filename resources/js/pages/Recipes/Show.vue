@@ -2,6 +2,7 @@
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, ref } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import StarRating from '@/components/StarRating.vue';
 import { formatQuantity, scaleQuantity } from '@/lib/quantity';
 import { destroy as recipesDestroy, edit as recipesEdit, index as recipesIndex } from '@/routes/recipes';
 import type { Recipe } from '@/types/recipes';
@@ -171,6 +172,7 @@ onBeforeUnmount(() => {
                 <span v-if="recipe.prep_minutes">Prep {{ recipe.prep_minutes }} min</span>
                 <span v-if="recipe.cook_minutes">Cook {{ recipe.cook_minutes }} min</span>
                 <span>Original recipe serves {{ recipe.servings }}</span>
+                <StarRating v-if="recipe.rating" :model-value="recipe.rating" size="sm" />
             </div>
         </header>
 

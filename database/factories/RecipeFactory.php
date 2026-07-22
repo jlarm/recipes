@@ -27,6 +27,7 @@ class RecipeFactory extends Factory
             'servings' => $this->faker->numberBetween(2, 8),
             'prep_minutes' => $this->faker->numberBetween(5, 30),
             'cook_minutes' => $this->faker->numberBetween(10, 90),
+            'rating' => $this->faker->optional(0.7)->numberBetween(1, 5),
             'instructions' => collect(range(1, $this->faker->numberBetween(3, 6)))
                 ->map(fn (int $step): string => $this->faker->sentence(10))
                 ->implode("\n"),

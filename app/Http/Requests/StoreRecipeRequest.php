@@ -24,6 +24,7 @@ class StoreRecipeRequest extends FormRequest
         $this->merge([
             'prep_minutes' => $nullIfBlank($this->prep_minutes),
             'cook_minutes' => $nullIfBlank($this->cook_minutes),
+            'rating' => $nullIfBlank($this->rating),
             'ingredients' => array_map(function (mixed $ingredient) use ($nullIfBlank): mixed {
                 if (is_array($ingredient) && array_key_exists('quantity', $ingredient)) {
                     $ingredient['quantity'] = $nullIfBlank($ingredient['quantity']);
@@ -48,6 +49,7 @@ class StoreRecipeRequest extends FormRequest
             'servings' => ['required', 'integer', 'min:1', 'max:100'],
             'prep_minutes' => ['nullable', 'integer', 'min:0', 'max:1440'],
             'cook_minutes' => ['nullable', 'integer', 'min:0', 'max:1440'],
+            'rating' => ['nullable', 'integer', 'min:1', 'max:5'],
             'instructions' => ['required', 'string', 'max:10000'],
             'ingredients' => ['required', 'array', 'min:1'],
             'ingredients.*.name' => ['required', 'string', 'max:255'],

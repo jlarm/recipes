@@ -24,12 +24,13 @@ use Illuminate\Support\Str;
  * @property int $servings
  * @property int|null $prep_minutes
  * @property int|null $cook_minutes
+ * @property int|null $rating
  * @property string $instructions
  * @property string|null $image_url
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['title', 'slug', 'category_id', 'description', 'image_path', 'servings', 'prep_minutes', 'cook_minutes', 'instructions'])]
+#[Fillable(['title', 'slug', 'category_id', 'description', 'image_path', 'servings', 'prep_minutes', 'cook_minutes', 'rating', 'instructions'])]
 class Recipe extends Model
 {
     /** @use HasFactory<RecipeFactory> */
@@ -119,6 +120,21 @@ class Recipe extends Model
         return $query->whereHas('category', fn (Builder $category) => $category->where('slug', $categorySlug));
     }
 
+    /**
+     * Filter to recipes rated at least the given number of stars.
+     *
+     * @param  Builder<Recipe>  $query
+     * @return Builder<Recipe>
+     */
+    public function scopeMinRating(Builder $query, ?int $minRating): Builder
+    {
+        if ($minRating === null || $minRating < 1) {
+            return $query;
+        }
+
+        return $query->where('rating', '>=', $minRating);
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';
@@ -147,6 +163,7 @@ class Recipe extends Model
             'servings' => 'integer',
             'prep_minutes' => 'integer',
             'cook_minutes' => 'integer',
+            'rating' => 'integer',
         ];
     }
 }

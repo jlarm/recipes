@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import StarRating from '@/components/StarRating.vue';
 import { formatQuantity, parseQuantity } from '@/lib/quantity';
 import { COMMON_UNITS } from '@/lib/units';
 import { index as recipesIndex, store as recipesStore, update as recipesUpdate } from '@/routes/recipes';
@@ -45,6 +46,7 @@ const form = useForm<{
     servings: number;
     prep_minutes: number | null;
     cook_minutes: number | null;
+    rating: number | null;
     instructions: string;
     ingredients: IngredientRow[];
 }>({
@@ -56,6 +58,7 @@ const form = useForm<{
     servings: props.recipe?.servings ?? 4,
     prep_minutes: props.recipe?.prep_minutes ?? null,
     cook_minutes: props.recipe?.cook_minutes ?? null,
+    rating: props.recipe?.rating ?? null,
     instructions: props.recipe?.instructions ?? '',
     ingredients: initialIngredients(),
 });
@@ -211,6 +214,12 @@ const labelClass = 'block text-sm font-medium';
                     <input id="cook" v-model.number="form.cook_minutes" type="number" min="0" max="1440" :class="inputClass" />
                     <p v-if="form.errors.cook_minutes" class="mt-1 text-xs text-red-600">{{ form.errors.cook_minutes }}</p>
                 </div>
+            </div>
+
+            <div>
+                <span class="mb-1.5 block text-sm font-medium">Rating <span class="font-normal text-[#706f6c] dark:text-[#A1A09A]">(optional)</span></span>
+                <StarRating v-model="form.rating" editable size="lg" />
+                <p v-if="form.errors.rating" class="mt-1 text-xs text-red-600">{{ form.errors.rating }}</p>
             </div>
         </div>
 

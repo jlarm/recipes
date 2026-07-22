@@ -87,6 +87,45 @@ it('falls back to newest for an unknown sort value', function () {
         ->assertInertia(fn ($page) => $page->where('filters.sort', 'newest'));
 });
 
+it('filters recipes by a minimum rating', function () {
+    $five = Recipe::factory()->create(['title' => 'Five Star', 'rating' => 5]);
+    $three = Recipe::factory()->create(['title' => 'Three Star', 'rating' => 3]);
+    Recipe::factory()->create(['title' => 'Unrated', 'rating' => null]);
+
+    get(route('recipes.index', ['min_rating' => 4]))
+        ->assertInertia(fn ($page) => $page
+            ->has('recipes.data', 1)
+            ->where('recipes.data.0.slug', $five->slug)
+            ->where('filters.minRating', 4)
+        );
+
+    get(route('recipes.index', ['min_rating' => 3]))
+        ->assertInertia(fn ($page) => $page->has('recipes.data', 2));
+});
+
+it('ignores an out-of-range minimum rating', function () {
+    Recipe::factory()->count(2)->create(['rating' => null]);
+
+    get(route('recipes.index', ['min_rating' => 9]))
+        ->assertInertia(fn ($page) => $page
+            ->has('recipes.data', 2)
+            ->where('filters.minRating', 0)
+        );
+});
+
+it('sorts recipes by top rated with unrated last', function () {
+    Recipe::factory()->create(['title' => 'Low', 'rating' => 2]);
+    Recipe::factory()->create(['title' => 'High', 'rating' => 5]);
+    Recipe::factory()->create(['title' => 'None', 'rating' => null]);
+
+    get(route('recipes.index', ['sort' => 'top-rated']))
+        ->assertInertia(fn ($page) => $page
+            ->where('recipes.data.0.title', 'High')
+            ->where('recipes.data.1.title', 'Low')
+            ->where('recipes.data.2.title', 'None')
+        );
+});
+
 it('exposes categories to the index for the filter UI', function () {
     Category::factory()->create(['name' => 'Zzz Last']);
     Category::factory()->create(['name' => 'Aaa First']);

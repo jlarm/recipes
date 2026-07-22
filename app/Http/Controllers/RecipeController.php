@@ -27,12 +27,15 @@ class RecipeController extends Controller
         'oldest' => [self::class, 'sortOldest'],
         'title' => [self::class, 'sortTitle'],
         'quickest' => [self::class, 'sortQuickest'],
+        'top-rated' => [self::class, 'sortTopRated'],
     ];
 
     public function index(Request $request): Response
     {
         $search = $request->string('search')->trim()->value();
         $category = $request->string('category')->trim()->value();
+        $minRating = $request->integer('min_rating');
+        $minRating = ($minRating >= 1 && $minRating <= 5) ? $minRating : 0;
         $sort = $request->string('sort')->value();
         $sort = array_key_exists($sort, self::SORTS) ? $sort : 'newest';
 
@@ -40,13 +43,14 @@ class RecipeController extends Controller
             ->with('category:id,name,slug')
             ->withCount('ingredients')
             ->search($search)
-            ->inCategory($category);
+            ->inCategory($category)
+            ->minRating($minRating);
 
         (self::SORTS[$sort])($query);
 
         $columns = [
             'id', 'title', 'slug', 'category_id', 'description', 'image_path',
-            'servings', 'prep_minutes', 'cook_minutes', 'created_at',
+            'servings', 'prep_minutes', 'cook_minutes', 'rating', 'created_at',
         ];
 
         return Inertia::render('Recipes/Index', [
@@ -55,6 +59,7 @@ class RecipeController extends Controller
             'filters' => [
                 'search' => $search,
                 'category' => $category,
+                'minRating' => $minRating,
                 'sort' => $sort,
             ],
         ]);
@@ -178,5 +183,16 @@ class RecipeController extends Controller
     private static function sortQuickest(Builder $query): Builder
     {
         return $query->orderByRaw('(COALESCE(prep_minutes, 0) + COALESCE(cook_minutes, 0)) asc');
+    }
+
+    /**
+     * Highest-rated first, with unrated recipes last.
+     *
+     * @param  Builder<Recipe>  $query
+     * @return Builder<Recipe>
+     */
+    private static function sortTopRated(Builder $query): Builder
+    {
+        return $query->orderByRaw('rating is null asc')->orderByDesc('rating')->latest();
     }
 }

@@ -22,6 +22,7 @@ export interface Recipe {
     servings: number;
     prep_minutes: number | null;
     cook_minutes: number | null;
+    rating: number | null;
     instructions: string;
     ingredients: Ingredient[];
     created_at: string;
@@ -31,11 +32,12 @@ export type RecipeSummary = Omit<Recipe, 'ingredients' | 'instructions'> & {
     ingredients_count: number;
 };
 
-export type RecipeSort = 'newest' | 'oldest' | 'title' | 'quickest';
+export type RecipeSort = 'newest' | 'oldest' | 'title' | 'quickest' | 'top-rated';
 
 export interface RecipeFilters {
     search: string;
     category: string;
+    minRating: number;
     sort: RecipeSort;
 }
 
